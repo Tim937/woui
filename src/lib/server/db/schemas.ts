@@ -11,6 +11,7 @@ export const users = sqliteTable('users', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  name:text('name').notNull().unique(),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
   role: text('role', { enum: ['admin', 'agency'] }).default('agency').notNull(),
@@ -173,7 +174,26 @@ export const tripMaps = sqliteTable('trip_maps', {
     .notNull(),
 });
 
-// --- 8. RELATIONS ---
+// --- 9. TABLE TASKS (gestion de projet) ---
+export const tasks = sqliteTable('tasks', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: text('status', { enum: ['todo', 'in_progress', 'done'] })
+    .default('todo')
+    .notNull(),
+  priority: text('priority', { enum: ['low', 'medium', 'high'] })
+    .default('medium')
+    .notNull(),
+  dueDate: integer('due_date', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+});
+
+// --- 10. RELATIONS ---
 
 export const usersRelations = relations(users, ({ many }) => ({
   agencyClients: many(agencyClients),

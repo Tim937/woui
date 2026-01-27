@@ -1,8 +1,12 @@
-import {redirect} from '@sveltejs/kit';
+import {redirect, fail} from '@sveltejs/kit';
+
 import {db} from '$lib/server/db';
 import {users,clients, agencyClients} from '$lib/server/db/schemas';
 import {eq} from 'drizzle-orm';
 import type {PageServerLoad} from './$types';
+import {newClientSchema} from '$lib/server/db/validation';
+
+// les schémas de validations zod
 
 export const load: PageServerLoad = async({cookies}) => {
 
@@ -34,4 +38,41 @@ export const load: PageServerLoad = async({cookies}) => {
 };
 
 
+export const actions = {
+
+  default: async ({ request, cookies, url }) => {
+    const sessionId = cookies.get('session');
+    const formData = await request.formData()
+
+    const newClientContent = {
+      email:formData.get('newClient'),
+      message:formData.get('newClientMessage')
+    }
+
+    const result = newClientSchema.safeParse(newClientContent);
+
+    if (!result.success) {
+      return result.error; 
+    } 
+   
+   
+    const createClient = db.insert(clients).values({
+      email:result.data.email,
+      name:'',
+      password:''
+    }).returning().get()
+    
+    
+    // const link = db.select().from(users).where(eq(users.id,sessionId)).get();
+
+    // Process the form data and perform actions
+    return { 
+      success: true,
+      message:result.data.message,
+      email:result.data.email,
+      link: `${url.origin}/client/access/${createClient.accessToken}`
+
+    };
+  },
+};
 

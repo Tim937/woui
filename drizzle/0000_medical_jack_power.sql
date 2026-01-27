@@ -62,6 +62,16 @@ CREATE TABLE `messages` (
 	FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `tasks` (
+	`id` text PRIMARY KEY NOT NULL,
+	`title` text NOT NULL,
+	`description` text,
+	`status` text DEFAULT 'todo' NOT NULL,
+	`priority` text DEFAULT 'medium' NOT NULL,
+	`due_date` integer,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `trip_maps` (
 	`id` text PRIMARY KEY NOT NULL,
 	`trip_id` text NOT NULL,
@@ -91,10 +101,12 @@ CREATE TABLE `trips` (
 CREATE UNIQUE INDEX `trips_reference_unique` ON `trips` (`reference`);--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
 	`email` text NOT NULL,
 	`password` text NOT NULL,
 	`role` text DEFAULT 'agency' NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `users_name_unique` ON `users` (`name`);--> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);

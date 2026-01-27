@@ -20,3 +20,17 @@ export const createClientSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
 });
+
+export const newClientSchema = z.object({
+  email:z.string().email(),
+  message: z.string().optional()
+});
+
+
+export const taskSchema = z.object({
+  title: z.string().min(1, 'Titre requis'),
+  description: z.string().optional(),
+  status: z.enum(['todo', 'in_progress', 'done']).default('todo'),
+  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  dueDate: z.string().optional(), // date en string depuis le form
+});
