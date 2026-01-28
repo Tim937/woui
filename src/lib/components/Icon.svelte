@@ -6,10 +6,12 @@
   interface Props extends SVGAttributes<SVGSVGElement> {
     type: IconType;
     size?: number | string;
-    defaultClass?: string;
+    customColor?: string;
+    className?: string;
+
   }
   const version = import.meta.env.DEV ? Date.now() : '1';
-  let { defaultClass, type, size, ...rest }: Props = $props();
+  let { customColor, className, type, size, ...rest }: Props = $props();
 </script>
 
 <!-- utilisation
@@ -23,11 +25,12 @@
 -->
 
 <svg
-  width={size ?? '2rem'}
-  height={size ?? '2rem'}
+  width={size ?? '1rem'}
+  height={size ?? '1rem'}
   aria-hidden="true"
-  class={rest.class ?? 'text-dark'}
   {...rest}
+  class="{customColor ?? 'stroke-dark'} {className ?? ''}"
+
 >
   <use href="/icons.svg?v={version}#{type}" />
 </svg>

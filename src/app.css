@@ -1,14 +1,18 @@
+@import 'tailwindcss';
 
 /* gradient creation
 https://css-tricks.com/grainy-gradients/
 */
-:root {
+.test {
+  
   /* Couleurs */
-  --color-primary: #D0E0FF;
-  --color-secondary: #E9E8F5;
+  --color-primary: #7139fe;
+  --color-secondary: #e0f6ff;
   --color-success: #72FC29;
   --color-warning: #FFC035;
   --color-error: #FE5A35;
+  --color-focus: #cba5fa;
+
 
   /* Genériques */
   --color-white: #ffffff;
@@ -22,65 +26,234 @@ https://css-tricks.com/grainy-gradients/
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
+  --spacing-desk: 32px;
+  --spacing-mob: 10px;
 
   /* Border radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
 
-  /* Font */
+ /* fonts */ 
 
   --font-sans: system-ui, -apple-system, sans-serif;
+  /* Wrapping */
+  --container-big: 1600px;
+  /* --container-med: 1040px; */
+  /* --container-small: 920px; */
+  /* --container-mob: 640px; */
+
+  --spacing-btn: 52px;
+  --spacing-call: 72px;
 }
 
+@theme {
 
-@layer base{
-  *, *::before, *::after {
+  /* Couleurs */
+  --color-primary: #4a5c6c;
+  --color-secondary: #e0f6ff;
+  --color-success: #72FC29;
+  --color-warning: #FFC035;
+  --color-error: #FE5A35;
+  --color-focus: #cba5fa;
+
+
+  /* Genériques */
+  --color-white: #ffffff;
+  --color-dark: #141414;
+  --color-beige:#EDE7E7;
+  --color-grey:#F0F0F0;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --spacing-desk: 32px;
+  --spacing-mob: 10px;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+
+ /* fonts */ 
+
+  --font-sans: system-ui, -apple-system, sans-serif;
+  /* Wrapping */
+  --container-big: 1600px;
+  /* --container-med: 1040px; */
+  /* --container-small: 920px; */
+  /* --container-mob: 640px; */
+
+  --spacing-btn: 52px;
+  --spacing-call: 72px;
+}
+
+@layer base {
+  /* Box sizing */
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
+  }
+
+  /* Remove default margin/padding */
+  * {
     margin: 0;
     padding: 0;
   }
 
+  /* Root */
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+    tab-size: 4;
+    line-height: 1.5;
+    scroll-behavior: smooth;
   }
 
+  /* Body */
   body {
     min-height: 100vh;
     font-family: var(--font-sans);
-    line-height: 1.5;
+    line-height: inherit;
     color: var(--color-dark);
     background: var(--color-white);
   }
 
-  img, picture, video, canvas, svg {
-    display: block;
-    max-width: 100%;
-  }
 
-  input, button, textarea, select {
-    font: inherit;
-  }
-
+  /* Links */
   a {
     color: inherit;
-    text-decoration: none;
+    text-decoration: inherit;
   }
 
-  ul, ol {
+  /* Lists */
+  ul, ol, menu {
     list-style: none;
   }
 
-  button {
-    cursor: pointer;
-    background: none;
+  /* Forms */
+  input, button, textarea, select, optgroup {
+    font: inherit;
+    color: inherit;
+    background: transparent;
     border: none;
   }
+
+  input,
+  textarea,
+  select {
+    outline: none;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* Remove default checkbox/radio styles */
+  input[type="checkbox"],
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    background: currentColor;
+  }
+
+  /* Remove number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Remove search input clear button */
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: inherit;
+  }
+
+  button, [role="button"] {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  /* Misc */
+  hr {
+    border: none;
+    border-top: 1px solid;
+    height: 0;
+    color: inherit;
+  }
+
+
+  b, strong {
+    font-weight: bolder;
+  }
+
+  code, kbd, samp, pre {
+    font-family: ui-monospace, monospace;
+    font-size: 1em;
+  }
+
+
+  /* Remove default button styles */
+  button::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+  }
+
+  /* Hidden attribute */
+  [hidden] {
+    display: none !important;
+  }
 }
+
 @layer components{
+  .wrapper-full {
+    @apply w-full px-10;
+  }
+  .wrapper-big {
+      @apply max-w-[var(--container-big)] mx-auto;
+  }
+
+  .input-wrapper:has(input:focus) {
+    @apply ring-2 ring-focus/50 transition-all duration-75 ease-in;
+  }
 
 }
+
 @layer utilities{
 
 }

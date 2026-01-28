@@ -8,14 +8,13 @@
 
 <p>Agence  : {data.user.name}</p>
 
-<Searchbar />
+
 <h2 class="font-bold mb-2">Vos clients</h2>
 <ul>
     {#each data.clients as client}
         <li>{client.name}</li>
     {/each}
 </ul>
-
 
 
 <form method="POST" class="">
