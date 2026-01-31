@@ -15,9 +15,13 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
   create: async ({ request }) => {
     const formData = await request.formData();
+
+    const description = formData.get('description') as string;
+    const title = description?.substring(0,50) || 'Sans titre';
     const data = {
-      title: formData.get('title'),
-      description: formData.get('description') || undefined,
+      title:title,
+      description: description,
+      category: formData.get('category') || undefined,
       status: formData.get('status') || 'todo',
       priority: formData.get('priority') || 'medium',
       dueDate: formData.get('dueDate') || undefined,
@@ -31,6 +35,7 @@ export const actions: Actions = {
     db.insert(tasks).values({
       title: result.data.title,
       description: result.data.description,
+      category: result.data.category,
       status: result.data.status,
       priority: result.data.priority,
       dueDate: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
@@ -74,7 +79,7 @@ export const actions: Actions = {
     const id = formData.get('id') as string;
 
     db.delete(tasks).where(eq(tasks.id, id)).run();
-
+    
     return { success: true };
   },
 };

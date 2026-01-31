@@ -1,17 +1,17 @@
 <script lang="ts">
   import type { SVGAttributes } from 'svelte/elements';
 
-  type IconType = 'search' | 'plus' | 'trash';
+  type IconType = 'search' | 'plus' | 'trash' | 'delete';
 
   interface Props extends SVGAttributes<SVGSVGElement> {
     type: IconType;
     size?: number | string;
     customColor?: string;
-    className?: string;
+    classIcon?: string;
 
   }
   const version = import.meta.env.DEV ? Date.now() : '1';
-  let { customColor, className, type, size, ...rest }: Props = $props();
+  let { customColor, classIcon, type, size, ...rest }: Props = $props();
 </script>
 
 <!-- utilisation
@@ -29,7 +29,7 @@
   height={size ?? '1rem'}
   aria-hidden="true"
   {...rest}
-  class="{customColor ?? 'stroke-dark'} {className ?? ''}"
+  class="{customColor ?? 'stroke-dark'} {classIcon ?? ''}"
 
 >
   <use href="/icons.svg?v={version}#{type}" />

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { success } from "zod";
     import Icon from '$lib/components/Icon.svelte';
-	import Searchbar from "$lib/components/Searchbar.svelte";
+	import Searchbar from "$lib/components/Tasksbar.svelte";
   
     let {data, form}=$props();
 </script>

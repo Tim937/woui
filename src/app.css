@@ -6,6 +6,7 @@ https://css-tricks.com/grainy-gradients/
 .test {
   
   /* Couleurs */
+  --color-violet:#6315C1;
   --color-primary: #7139fe;
   --color-secondary: #e0f6ff;
   --color-success: #72FC29;
@@ -50,7 +51,8 @@ https://css-tricks.com/grainy-gradients/
 @theme {
 
   /* Couleurs */
-  --color-primary: #4a5c6c;
+--color-violet:#6315C1;
+  --color-primary: #4E08A8;
   --color-secondary: #e0f6ff;
   --color-success: #72FC29;
   --color-warning: #FFC035;
@@ -187,6 +189,39 @@ https://css-tricks.com/grainy-gradients/
     appearance: none;
   }
 
+  /* Remove date input default styles */
+  input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  /* Hide calendar picker icon in Chrome/Safari/Edge */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Hide calendar picker icon in Firefox */
+  input[type="date"]::-moz-calendar-picker-indicator {
+    display: none !important;
+    opacity: 0;
+  }
+
+  /* Hide clear button in Chrome/Safari/Edge */
+  input[type="date"]::-webkit-clear-button {
+    display: none !important;
+    -webkit-appearance: none;
+  }
+
+  /* Hide inner spin button */
+  input[type="date"]::-webkit-inner-spin-button {
+    display: none !important;
+    -webkit-appearance: none;
+  }
+
   input::placeholder,
   textarea::placeholder {
     opacity: 1;
@@ -248,8 +283,14 @@ https://css-tricks.com/grainy-gradients/
       @apply max-w-[var(--container-big)] mx-auto;
   }
 
-  .input-wrapper:has(input:focus) {
-    @apply ring-2 ring-focus/50 transition-all duration-75 ease-in;
+  .input-wrapper:has(input:focus), input:focus {
+    @apply ring-4 ring-focus/50 transition-all duration-75 ease-in;
+  }
+  .task {
+    @apply absolute top-0 left-0 w-full h-full pl-6 pr-6 text-left bg-white rounded-full border border-primary transition-all duration-100 opacity-100;
+  }
+  .task-hidden {
+    @apply opacity-77 -translate-y-4 blur-[1px] scale-x-90 border-secondary;
   }
 
 }

@@ -181,6 +181,7 @@ export const tasks = sqliteTable('tasks', {
     .$defaultFn(() => crypto.randomUUID()),
   title: text('title').notNull(),
   description: text('description'),
+  category: text('category'),
   status: text('status', { enum: ['todo', 'in_progress', 'done'] })
     .default('todo')
     .notNull(),
