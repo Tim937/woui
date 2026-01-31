@@ -13,6 +13,7 @@
 
   // États pour le formulaire multi-étapes
   let step = $state(1);
+  let displayStep = $state(1); // État séparé pour l'affichage de la barre verte
   let description = $state('');
   let category = $state('');
   let dueDate = $state('');
@@ -37,22 +38,18 @@
 
   // Réinitialiser après soumission
   function handleSubmit(event: Event) {
-    const form = event.target as HTMLFormElement;
-    setTimeout(() => {
-      step = 1;
-      description = '';
-      category = '';
-      dueDate = '';
-    }, 100);
+    // La réinitialisation est gérée par le $effect sur form?.success
   }
 
-  // Réinitialiser si succès
+  // Réinitialiser si succès (avec délai de 1s pour l'animation)
   $effect(() => {
     if (form?.success) {
-      step = 1;
-      description = '';
-      category = '';
-      dueDate = '';
+      setTimeout(() => {
+        step = 1;
+        description = '';
+        category = '';
+        dueDate = '';
+      }, 1000);
     }
   });
 
@@ -112,9 +109,14 @@
     readonly={step !== 3}
     onkeydown={(e) => handleKeydown(e, 3)}
   >
-  <div class="z-10 absolute top-1 right-2 w-10 bottom-1 rounded-r-full flex align-center items-center bg-white">
-      <Icon type="plus" customColor="stroke-primary"/>
-
+  <div class="bg-white overflow-hidden z-10 absolute top-3 right-3 w-20 bottom-3 rounded-full flex items-center justify-end {step > 1 ? 'border border-dark' : 'border border-dark'}"
+  >
+    <span class="absolute left-0 top-0 w-12 h-full inline-block shrink-0 bg-red bg-success z-11 origin-left transition-transform duration-300 ease-out"
+    class:scale-x-0={step === 1}
+    class:scale-x-50={step === 2}
+    class:scale-x-100={step === 3}
+    ></span>
+    <Icon type="plus" customColor="stroke-primary" classIcon="mx-2"/>
   </div>
 
   {#if form?.error}

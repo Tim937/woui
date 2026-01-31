@@ -18,6 +18,7 @@ https://css-tricks.com/grainy-gradients/
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
+  --color-grey:#747474;
   --color-beige:#EDE7E7;
   --color-grey:#F0F0F0;
 
@@ -51,7 +52,7 @@ https://css-tricks.com/grainy-gradients/
 @theme {
 
   /* Couleurs */
---color-violet:#6315C1;
+  --color-violet:#6315C1;
   --color-primary: #4E08A8;
   --color-secondary: #e0f6ff;
   --color-success: #72FC29;
@@ -63,6 +64,7 @@ https://css-tricks.com/grainy-gradients/
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
+  --color-grey:#747474;
   --color-beige:#EDE7E7;
   --color-grey:#F0F0F0;
 
@@ -290,7 +292,7 @@ https://css-tricks.com/grainy-gradients/
     @apply absolute top-0 left-0 w-full h-full pl-6 pr-6 text-left bg-white rounded-full border border-primary transition-all duration-100 opacity-100;
   }
   .task-hidden {
-    @apply opacity-77 -translate-y-4 blur-[1px] scale-x-90 border-secondary;
+    @apply opacity-77 -translate-y-5 blur-[1px] scale-x-90 border-gray-700;
   }
 
 }
