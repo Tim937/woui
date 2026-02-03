@@ -1,5 +1,7 @@
 <script lang="ts">
   import type {HTMLInputAttributes} from 'svelte/elements';
+  import {enhance} from '$app/forms';
+  import {invalidateAll} from '$app/navigation';
   import Icon from '$lib/components/Icon.svelte';
 
   interface Props extends HTMLInputAttributes {
@@ -13,8 +15,7 @@
 
   // États pour le formulaire multi-étapes
   let step = $state(1);
-  let displayStep = $state(1); // État séparé pour l'affichage de la barre verte
-  let description = $state('');
+  let title = $state('');
   let category = $state('');
   let dueDate = $state('');
 
@@ -25,47 +26,45 @@
   function handleKeydown(event: KeyboardEvent, currentStep: number) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      if (currentStep === 1 && description.trim()) {
+      if (currentStep === 1 && title.trim()) {
         step = 2;
       } else if (currentStep === 2) {
         step = 3;
       } else if (currentStep === 3) {
-        // Soumettre le formulaire
         (event.target as HTMLInputElement).form?.requestSubmit();
+        step = 4;
+      } else if (currentStep === 4) {
+
       }
     }
   }
 
-  // Réinitialiser après soumission
-  function handleSubmit(event: Event) {
-    // La réinitialisation est gérée par le $effect sur form?.success
-  }
-
-  // Réinitialiser si succès (avec délai de 1s pour l'animation)
-  $effect(() => {
-    if (form?.success) {
-      setTimeout(() => {
-        step = 1;
-        description = '';
-        category = '';
-        dueDate = '';
-      }, 1000);
-    }
-  });
 
   // Focus automatique lors du changement de step
   $effect(() => {
     inputs[step - 1]?.focus();
   });
 
- 
 </script>
 
 <form
   method="POST"
   action={formAction}
+  use:enhance={() => {
+    return async ({result}) => {
+      // Garder la barre verte pendant 1s
+      step = 4;
+      setTimeout(async () => {
+        step = 1;
+        title = '';
+        category = '';
+        dueDate = '';
+        // Recharger les données pour afficher la nouvelle card
+        await invalidateAll();
+      }, 1000);
+    };
+  }}
   class="relative bg-white z-0 rounded-full {classSearch}"
-  onsubmit={handleSubmit}
 >
   <input
     bind:this={inputs[0]}
@@ -73,12 +72,11 @@
     class="task z-1"
     class:task-hidden={step > 1}
     type="text"
-    bind:value={description}
-    name="description"
+    bind:value={title}
+    name="title"
     autocomplete="off"
     placeholder="ajouter une tâche"
     required
-
     readonly={step > 1}
     onkeydown={(e) => handleKeydown(e, 1)}
   >
@@ -109,15 +107,23 @@
     readonly={step !== 3}
     onkeydown={(e) => handleKeydown(e, 3)}
   >
-  <div class="bg-white overflow-hidden z-10 absolute top-3 right-3 w-20 bottom-3 rounded-full flex items-center justify-end {step > 1 ? 'border border-dark' : 'border border-dark'}"
-  >
-    <span class="absolute left-0 top-0 w-12 h-full inline-block shrink-0 bg-red bg-success z-11 origin-left transition-transform duration-300 ease-out"
-    class:scale-x-0={step === 1}
-    class:scale-x-50={step === 2}
-    class:scale-x-100={step === 3}
+  <button type="submit" class="group bg-white hover:bg-grey transition-all duration-100 overflow-hidden z-10 absolute top-3 right-3 w-20 bottom-3 rounded-full flex items-center justify-end
+    hover:shadow-md
+    {step > 1 ? 'border border-dark' : 'border border-dark'}"
+    >
+    <span class="absolute left-0 top-0 w-full h-full inline-block shrink-0 bg-grey z-11 origin-left transition-transform duration-300 ease-out"
+      class:scale-x-0={step === 1}
+      class:scale-x-33={step === 2}
+      class:scale-x-66={step === 3}
+      class:scale-x-100={step === 4}
     ></span>
-    <Icon type="plus" customColor="stroke-primary" classIcon="mx-2"/>
-  </div>
+    <div class="relative rounded-full w-5.5 h-5.5 z-12 border border-dark group-hover:scale-80 mr-2 bg-grey flex items-center justify-center"
+    class:bg-success={step===4}
+    class:anim-validation={step===4}>
+      <Icon width="0.6rem" height="0.6rem" type="plus" customColor="stroke-primary" classIcon="group-hover:stroke-violet"/>
+    </div>
+    
+  </button>
 
   {#if form?.error}
     <div class="text-red-500 text-sm mt-2">

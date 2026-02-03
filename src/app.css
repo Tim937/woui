@@ -7,18 +7,20 @@ https://css-tricks.com/grainy-gradients/
   
   /* Couleurs */
   --color-violet:#6315C1;
-  --color-primary: #7139fe;
+  --color-primary: #4E08A8;
   --color-secondary: #e0f6ff;
   --color-success: #72FC29;
   --color-warning: #FFC035;
   --color-error: #FE5A35;
   --color-focus: #cba5fa;
 
+  --color-important:#fe3546;
+
 
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
-  --color-grey:#747474;
+  --color-grey-dark:#747474;
   --color-beige:#EDE7E7;
   --color-grey:#F0F0F0;
 
@@ -54,16 +56,17 @@ https://css-tricks.com/grainy-gradients/
   /* Couleurs */
   --color-violet:#6315C1;
   --color-primary: #4E08A8;
-  --color-secondary: #e0f6ff;
+  --color-secondary: #E9E8F5;
   --color-success: #72FC29;
   --color-warning: #FFC035;
   --color-error: #FE5A35;
   --color-focus: #cba5fa;
-
+  --color-important:#fe3546;
 
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
+  --color-grey-dark:#747474;
   --color-grey:#747474;
   --color-beige:#EDE7E7;
   --color-grey:#F0F0F0;
@@ -81,6 +84,9 @@ https://css-tricks.com/grainy-gradients/
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
+
+  /* Shadows */
+  --shadow-sm: rgba(100, 100, 111, 0.2) 0px 6px 16px 0px;
 
  /* fonts */ 
 
@@ -297,6 +303,21 @@ https://css-tricks.com/grainy-gradients/
 
 }
 
-@layer utilities{
+@layer utilities {
+  .anim-validation {
+    /* transform: scaleZ(0) !important; */
+    animation:anim-validation 400ms;
+  }
+}
 
+@keyframes anim-validation {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

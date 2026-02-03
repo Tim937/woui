@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SVGAttributes } from 'svelte/elements';
 
-  type IconType = 'search' | 'plus' | 'trash' | 'delete';
+  type IconType = 'search' | 'plus' | 'trash' | 'delete' | 'check';
 
   interface Props extends SVGAttributes<SVGSVGElement> {
     type: IconType;

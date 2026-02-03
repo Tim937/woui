@@ -175,6 +175,14 @@ export const tripMaps = sqliteTable('trip_maps', {
 });
 
 // --- 9. TABLE TASKS (gestion de projet) ---
+export const taskCategoryOrder = sqliteTable('task_category_order', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  category: text('category').notNull().unique(),
+  position: integer('position').notNull(),
+});
+
 export const tasks = sqliteTable('tasks', {
   id: text('id')
     .primaryKey()
