@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Button from "$lib/components/Button.svelte";
-  import TaskField from "$lib/components/TaskField.svelte";
+  import Button from "$lib/componentsAdmin/Button.svelte";
+  import TaskField from "$lib/componentsAdmin/TaskField.svelte";
 	import Icon from "./Icon.svelte";
 
   interface Props {
@@ -74,7 +74,7 @@
       <input
         type="text"
         name="category"
-        class="text-grey uppercase font-medium text-sm bg-transparent w-full p-1 rounded-sm "
+        class="text-grey uppercase font-medium text-sm bg-transparent w-120 p-1 rounded-sm "
         value={task.category || ''}
         placeholder="Catégorie..."
         onblur={(e) => autoSubmitIfChanged(e, task.category)}
@@ -110,8 +110,8 @@
   {/if}
 
 
-    <TaskField action="updatePriority" id={task.id} class="cursor-pointer block mx-auto mr-0 glass glass-hover bg-dark/40 border border-white/30 rounded-2xl">
-      <select name="priority" onchange={autoSubmit} class="px-6 py-3 font-bold bg-transparent h-full w-full cursor-pointer {task.priority === "low" ? "text-white" : task.priority === "medium" ? "text-orange-re" : "text-red-re"}">
+    <TaskField action="updatePriority" id={task.id} class="cursor-pointer block mx-auto mr-0 glass glass-hover border border-white/30 rounded-2xl">
+      <select name="priority" onchange={autoSubmit} class="w-max px-2 py-3 font-bold bg-transparent h-full cursor-pointer rounded-2xl {task.priority === "low" ? "text-dark bg-white/15 " : task.priority === "medium" ? "text-orange-re bg-dark/40 " : "text-red-re bg-dark/40 "}">
         <option value="low" selected={task.priority === 'low'}>low</option>
         <option value="medium" selected={task.priority === 'medium'}>medium</option>
         <option value="high" selected={task.priority === 'high'}>high</option>

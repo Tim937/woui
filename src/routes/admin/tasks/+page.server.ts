@@ -4,6 +4,8 @@ import { tasks, taskCategoryOrder } from '$lib/server/db/schemas';
 import { eq, isNotNull, asc } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 import { taskSchema } from '$lib/server/db/validation';
+import { appendTaskBackup, initializeTaskBackup } from '$lib/server/taskBackup';
+import crypto from 'crypto';
 
 // NOTE : Protection admin gérée par hooks.server.ts
 
@@ -14,6 +16,9 @@ export const load: PageServerLoad = async () => {
     .orderBy(asc(taskCategoryOrder.position))
     .all()
     .map(c => c.category);
+
+  // Initialise le backup JSON au premier chargement (idempotent)
+  // initializeTaskBackup(allTasks);
 
   return { tasks: allTasks, categoryOrder };
 };
@@ -37,14 +42,30 @@ export const actions: Actions = {
       return fail(400, { error: result.error.flatten().fieldErrors });
     }
 
+    const id = crypto.randomUUID();
+    const now = new Date();
+
     db.insert(tasks).values({
+      id,
       title: result.data.title,
       description: result.data.description,
       category: result.data.category,
       status: result.data.status,
       priority: result.data.priority,
       dueDate: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
+      createdAt: now,
     }).run();
+
+    appendTaskBackup({
+      id,
+      title: result.data.title,
+      description: result.data.description,
+      category: result.data.category,
+      priority: result.data.priority,
+      status: result.data.status,
+      dueDate: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
+      createdAt: now,
+    });
 
     return { success: true };
   },

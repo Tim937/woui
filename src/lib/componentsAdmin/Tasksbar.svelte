@@ -2,16 +2,17 @@
   import type {HTMLInputAttributes} from 'svelte/elements';
   import {enhance} from '$app/forms';
   import {invalidateAll} from '$app/navigation';
-  import Icon from '$lib/components/Icon.svelte';
+  import Icon from '$lib/componentsAdmin/Icon.svelte';
 
   interface Props extends HTMLInputAttributes {
     idSearch?: string;
     classSearch?: string;
     form?: any;
     formAction: string;
+    categories?: string[];
   }
 
-  let {idSearch, classSearch, formAction, form, ...rest}: Props = $props();
+  let {idSearch, classSearch, formAction, form, categories = [], ...rest}: Props = $props();
 
   // États pour le formulaire multi-étapes
   let step = $state(1);
@@ -22,6 +23,12 @@
   // Références aux inputs
   let inputs: (HTMLInputElement | HTMLTextAreaElement)[] = [];
   let formEl: HTMLFormElement;
+
+  // Sélectionner une catégorie existante
+  function selectCategory(cat: string) {
+    category = cat;
+    step = 3;
+  }
 
   // Gestion de la touche Entrée
   function handleKeydown(event: KeyboardEvent, currentStep: number) {
@@ -122,6 +129,20 @@
     readonly={step !== 2}
     onkeydown={(e) => handleKeydown(e, 2)}
   >
+
+  {#if step === 2 && categories.length > 0}
+    <div class="absolute top-full left-0 w-full flex flex-wrap gap-2 mt-2 z-10">
+      {#each categories as cat}
+        <button
+          type="button"
+          onclick={() => selectCategory(cat)}
+          class="glass glass-hover border-gradient px-4 py-2 rounded-full text-sm text-white uppercase font-medium transition-all"
+        >
+          {cat}
+        </button>
+      {/each}
+    </div>
+  {/if}
 
   <input
     bind:this={inputs[2]}

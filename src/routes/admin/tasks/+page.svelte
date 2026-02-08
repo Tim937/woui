@@ -1,8 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import Tasksbar from "$lib/components/Tasksbar.svelte";
-  import Taskscard from "$lib/components/Taskscard.svelte";
-  import Button from "$lib/components/Button.svelte";
+  import Tasksbar from "$lib/componentsAdmin/Tasksbar.svelte";
+  import Taskscard from "$lib/componentsAdmin/Taskscard.svelte";
+  import Button from "$lib/componentsAdmin/Button.svelte";
   import { useSortable } from '$lib/utils/useDragAndDrop.svelte';
 
   let { data, form } = $props();
@@ -58,6 +58,11 @@
     });
   });
 
+  // Catégories existantes (uniques, non-null)
+  let existingCategories = $derived(
+    [...new Set(data.tasks.map(t => t.category).filter((c): c is string => c != null))]
+  );
+
   // Drag & Drop
   const { sortable, isDragging, isDragOver } = useSortable({
     onReorder: async (group, newOrder) => {
@@ -70,15 +75,15 @@
 </script>
 
 <div class="relative min-h-screen pb-20">
-  <img src="/tasks/logo-todo.svg" alt="ile de la réunion" srcset="" class="fixed top-5 left-5 w-40 h-auto object-cover z-2">
+  <img src="/tasks/logo-todo.svg" alt="ile de la réunion" srcset="" class="fixed top-10 left-5 w-40 h-auto object-cover z-2">
   <img src="/tasks/bg-re-1.webp" alt="ile de la réunion" srcset="" class="fixed top-0 left-0 h-screen w-screen object-cover z-0">
 
   <!-- Background -->
-  <div class="absolute top-0 left-0 h-full w-screen bg-linear-to-b from-green-re/60 to-green-re/90 z-1"></div>
+  <div class="absolute top-0 left-0 h-full w-full bg-linear-to-b from-green-re/60 to-green-re/90 z-1"></div>
   <div class="fixed top-0 left-0 grain h-full w-screen z-1 opacity-5"></div>
 
   <!-- Rentrer les tâches -->
-  <Tasksbar classSearch="wrapper-med w-full relative min-h-18 my-30 mx-auto z-2" formAction="?/create" {form}/>
+  <Tasksbar classSearch="wrapper-med w-full relative min-h-18 mt-30 mb-16 mx-auto z-2" formAction="?/create" {form} categories={existingCategories}/>
 
   <!-- Barre de filtres -->
   <div class="wrapper-med relative flex items-center justify-center gap-8 mt-8 z-2">

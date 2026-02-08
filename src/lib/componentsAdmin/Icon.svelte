@@ -16,7 +16,7 @@
 
 <!-- utilisation
 <script>
-  import Icon from '$lib/components/Icon.svelte';
+  import Icon from '$lib/componentsAdmin/Icon.svelte';
 </script>
 
 <Icon type="search" />

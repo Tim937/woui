@@ -71,8 +71,6 @@ export const actions = {
         clientId:clientData.id
       }).run();
     }
- 
-
 
 
     const link = `${url.origin}/client/access/${clientData.accessToken}`;
