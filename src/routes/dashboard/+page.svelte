@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { success } from "zod";
-    import Icon from '$lib/components/Icon.svelte';
-	import Searchbar from "$lib/components/Tasksbar.svelte";
-  
+    
+
     let {data, form}=$props();
 </script>
 
@@ -15,7 +14,6 @@
         <li>{client.name}</li>
     {/each}
 </ul>
-
 
 <form method="POST" class="">
     <label for="newClientMessage" class="font-bold">un message</label>

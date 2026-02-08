@@ -8,21 +8,39 @@ https://css-tricks.com/grainy-gradients/
   /* Couleurs */
   --color-violet:#6315C1;
   --color-primary: #4E08A8;
-  --color-secondary: #e0f6ff;
+  --color-secondary: #212025;
   --color-success: #72FC29;
   --color-warning: #FFC035;
   --color-error: #FE5A35;
   --color-focus: #cba5fa;
-
   --color-important:#fe3546;
+  --color-in_progress:#feae35;
+  --color-done:#5afa5a;
 
+  --color-blue-re-deep:#85d3f4;
+  --color-blue-re:#A8DBE9;
+  --color-green-re:#1a2d22;
+  --color-red-re:#e33f37;
+  --color-orange-re:#e39837;
+   --color-green-light-re:#54d272;
 
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
   --color-grey-dark:#747474;
+  --color-grey:#b4b4b4;
   --color-beige:#EDE7E7;
-  --color-grey:#F0F0F0;
+  --color-grey:#cfcfcf;
+  --color-red:#e33f37;
+  --color-yellow:#ffdc3d;
+
+
+  /* Dark backgrounds */
+  --color-dark-900: #0c0b0e;
+  --color-dark-800: #12121a;
+  --color-dark-700: #1a1a25;
+  --color-dark-600: #252530;
+
 
   /* Spacing */
   --space-xs: 0.25rem;
@@ -56,20 +74,38 @@ https://css-tricks.com/grainy-gradients/
   /* Couleurs */
   --color-violet:#6315C1;
   --color-primary: #4E08A8;
-  --color-secondary: #E9E8F5;
+  --color-secondary: #212025;
   --color-success: #72FC29;
   --color-warning: #FFC035;
   --color-error: #FE5A35;
   --color-focus: #cba5fa;
   --color-important:#fe3546;
+  --color-in_progress:#feae35;
+  --color-done:#5afa5a;
 
   /* Genériques */
   --color-white: #ffffff;
   --color-dark: #141414;
   --color-grey-dark:#747474;
-  --color-grey:#747474;
+  --color-grey:#b4b4b4;
   --color-beige:#EDE7E7;
-  --color-grey:#F0F0F0;
+  --color-grey:#cfcfcf;
+  --color-red-re:#e33f37;
+  --color-orange-re:#e39837;
+  --color-yellow:#ffdc3d;
+
+  /* Color RE */
+  --color-blue-re-deep:#85d3f4;
+  --color-blue-re:#A8DBE9;
+  --color-green-re:#1a2d22;
+  --color-green-light-re:#54d272;
+
+
+  /* Dark backgrounds */
+  --color-dark-900: #0a0a0f;
+  --color-dark-800: #12121a;
+  --color-dark-700: #1a1a25;
+  --color-dark-600: #252530;
 
   /* Spacing */
   --space-xs: 0.25rem;
@@ -93,7 +129,7 @@ https://css-tricks.com/grainy-gradients/
   --font-sans: system-ui, -apple-system, sans-serif;
   /* Wrapping */
   --container-big: 1600px;
-  /* --container-med: 1040px; */
+  --container-med: 1040px;
   /* --container-small: 920px; */
   /* --container-mob: 640px; */
 
@@ -284,19 +320,100 @@ https://css-tricks.com/grainy-gradients/
 }
 
 @layer components{
+
+  /*.Grainy effect*/
+
+  .grain {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAYFSURBVHgBrZrZUuQwDEXTYd+p4o3//zKeeIFi32GGk5nruRGyk8DcKqq7HVuWZK0Oq1+f6BIwvFqtup8AGhcXF93u7m63s7NT6M2lvYSH/vHxMX3wUyFEY3Nzs3t6eupub2/L+NvbW3d9fd25DhnLvjOnouvReI+mPj4+uiVgfiRe2+zg4KBbW1sbPoWXl5fh7/X19R8jfV++Mx+giJpC2Q+Bte8qmhZMOtHvYIoGzxGC04JRWLi5uRmE1bolZjXsFwd9cU3LAibjZiBEIaDz/v5eNMgeW1tbhT5mBjOYuehlQmR7ab/eNxMBffejd8i00Ojz83OZXxMcgWE2mooEPjw8HL4TFNbX16t+IZOTQD5n9clU+fUdB2+ZABuKMYTnt07C12gec1zYJeY1CNJyqBah74bon4R2X+vf+5YftARcCo+MU0LgT9k+/L67uxv9LjRj1PofidDp1Oi5T9bWY3L4Dszv7+8PPlKj108Rnqv9mItEh085J8HD92kpjGcbGxuDENC+v78f0a0KkmFJKZGFXAFH1udSRSm3eEKNa4Yg0aq1yL5oBbQSXM2MpswHcFqYzFJzjntVBZlLYMoHcFydSIQqgBh25/AQ6fbZpJZsPCPBCSTErFYTY9oso6lT5tNDatwvQ1ROn03ONCNm2XR7e7uMq16qAdoPDw/lN4I7Pc0RFHprvBAwvPrQ+v9uWjp27J5CEHCCCH90dLSItqDMH+HF6WTUin1DRCw1+C0h9JscQNTRaWSAKZ1GNFUXggAkeABqnsjV1VWR+vj4+ItmWuGZdeQABJApsF5REOjkamVHhEe4RVGLR9gkm0/5jRhzx420oiDOoIpL1s7piaJSy+zoZDKLmjMrCXojVMsjfNJrRAcVxJBXAzUoeLDG+5MiiGr9SLyGaO8KtVkbzDNaapTiYzX4M/cJQO+P/7GHh/aRaSm6CHNLFMeoIg2nE01L9Dkt9q2dfFbWaEzJtJwIm7gQmhCZayUszBONeXHoz4C0KcEYp9nyWxZHJlzsMofkO5VHWvVSdErMLfqU12Ewi/ZhfG9vrxSRCJ4VlBnk5NHZZydERS8xJ2fPBK8Vjrot4eQRZmptfFarsr+ciDSssOvOqediSMXeHGHmgtMiKDgN/wTNfsTzAQtoYhAiXr/oefx0GmIig25l/DnrMDnG3EcdBKGpy7peDApMxn5BDMF+tDEAOI14ShJSjHhPzt1wloM0hzEJGBXk10JfWl0tzrQaj1gXdJeXl6P58d5JgnmnKBr4naKdW0CWx7S/FKPcN0Qu+UjUSC2SxFwTUatUo80LMAVNEh8XdZkJMYc/JdzML6sFTa2+yoTQbaNn24iqk34ypbzjbwaihbSEGJlWFjJrvyOUO7KGZ45AumDgylQ05COq+SR0RnOYE28aWzliDmqmlSELqYzRPtA2TJUsbq6jm0YVgi5ETQM1ZD26V8G+3v1Bz0iY5+fno/Y4E8Ix1Fo6Lo7y7OysxPp4vc84jZL8wJmLgimqoBjWeSjlmd+qR0VhZqenp4OZyTq0D3SiUoowv/5gFFE8w7vGnIkMRB9Kj1ZP72NeQcSK1hXcMtVS/ToBac7LlCLx3168BZXieoUgR409iq5R1bhpTPDqGSGwBJ26v48Rr6XWyrRGgtI1Zas69cs112BkfC6yYOMnVwvBafWrd3xZhdpiwM0QMyMXeS8+hdi7L9l3Vj8yl6hry9d5CzCXsWyciKbsHzGZLFgULyYciiT8eR/v+qmVLDFEU6YQep2Wh2XVZBlmZT05P7E925wN5LhZkqtFrXi5x6mdnJwM4zJrBRx/X59WDHNNi2yryzSON84RwzIvBIyNmSO7nGvN/Zv0vtzci07z/UjMLd41Tt09zfGrJf43ta5qWvGyDG0o2bUKTK3RDYnPi2apzlDgFDPTnYM+28BR+6cBoVZ34eCeQGPAUC3l10M4uG5VgCdMRxq1ooa9TIiMxv8kqt3lOjxD+z6sk79xR6A3t5rra6doD3y7j7Te5+lZWTjTB6bmRl/0cQRUnyKnrqH6nj0T6rvOOSXEd5/7nN+48aJ6G3s0IwAAAABJRU5ErkJggg==');
+    background-repeat: repeat;
+    pointer-events: none;
+    
+  }
+  /* Glass effect - performant */
+
+  .glass { 
+    @apply transition-[background,opacity,border-color] duration-100 font-bold text-white shadow-lg ring-0;
+    background: linear-gradient(0deg,rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.08) 30%,rgba(255, 255, 255, 0.08) 70%, rgba(255, 255, 255, 0.02) 100%);
+    /* backdrop-filter: blur(0.5px); */
+  }
+
+  .glass.active {
+    @apply  border-red-re bg-dark/20 text-red-re;
+  }
+
+  .glass-hover {
+    @apply duration-100 transition-colors;
+    &:hover {
+      @apply bg-white/10 ring-red-re/20;
+      backdrop-filter: blur(0px);
+    }
+  }
+
+  /* Bordure gradient — ::before = haut-gauche, ::after = bas-droite */
+  .border-gradient {
+    position: relative;
+  }
+
+  .border-gradient::before,
+  .border-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    z-index: 100;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+    -webkit-mask-clip: content-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
+  }
+
+  /* Haut-gauche */
+  .border-gradient::before {
+    background: radial-gradient(
+      circle at 0% 0%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.2) 5%,
+      rgba(255, 255, 255, 0.1) 10%
+    );
+  }
+
+  /* Bas-droite */
+  .border-gradient::after {
+    background: radial-gradient(
+      circle at 100% 100%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.2) 5%,
+      rgba(255, 255, 255, 0.1) 10%
+    );
+  }
+
+
   .wrapper-full {
     @apply w-full px-10;
   }
+
   .wrapper-big {
-      @apply max-w-[var(--container-big)] mx-auto;
+    @apply max-w-[var(--container-big)] mx-auto;
+  }
+
+  .wrapper-med {
+    @apply max-w-[var(--container-med)] mx-auto;
   }
 
   .input-wrapper:has(input:focus), input:focus {
-    @apply ring-4 ring-focus/50 transition-all duration-75 ease-in;
+    @apply ring-2 ring-white/20 transition-all duration-75 ease-in;
   }
+
+
+  /* Task input */
   .task {
-    @apply absolute top-0 left-0 w-full h-full pl-6 pr-6 text-left bg-white rounded-full border border-primary transition-all duration-100 opacity-100;
+    @apply absolute top-0 left-0 w-full h-full px-6 py-2 text-left bg-blue-re rounded-2xl border border-white/66 transition-[opacity,transform,border-color,filter] duration-100 opacity-100;
   }
+
   .task-hidden {
     @apply opacity-77 -translate-y-5 blur-[1px] scale-x-90 border-gray-700;
   }
@@ -309,6 +426,9 @@ https://css-tricks.com/grainy-gradients/
     animation:anim-validation 400ms;
   }
 }
+
+@variant custom-active (&.active);
+
 
 @keyframes anim-validation {
   0% {

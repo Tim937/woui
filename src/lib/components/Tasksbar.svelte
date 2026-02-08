@@ -20,11 +20,13 @@
   let dueDate = $state('');
 
   // Références aux inputs
-  let inputs: HTMLInputElement[] = [];
+  let inputs: (HTMLInputElement | HTMLTextAreaElement)[] = [];
+  let formEl: HTMLFormElement;
 
   // Gestion de la touche Entrée
   function handleKeydown(event: KeyboardEvent, currentStep: number) {
     if (event.key === 'Enter') {
+      if (event.shiftKey && currentStep === 1) return;
       event.preventDefault();
       if (currentStep === 1 && title.trim()) {
         step = 2;
@@ -33,21 +35,46 @@
       } else if (currentStep === 3) {
         (event.target as HTMLInputElement).form?.requestSubmit();
         step = 4;
-      } else if (currentStep === 4) {
-
-      }
+      } 
+    }
+      if (event.key === 'Escape') {
+          event.preventDefault();
+        step = 1;
+      
     }
   }
 
 
-  // Focus automatique lors du changement de step
+  // Auto-resize du textarea
+  let cachedMinH = 0;
+  function cacheMinHeight() {
+    if (formEl && !cachedMinH) {
+      cachedMinH = parseFloat(getComputedStyle(formEl).minHeight) || 0;
+    }
+  }
+  function autoResize(e: Event) {
+    const el = e.currentTarget as HTMLTextAreaElement;
+    el.style.height = 'auto';
+    cacheMinHeight();
+    const h = Math.max(el.scrollHeight, cachedMinH);
+    el.style.height = h + 'px';
+    if (formEl) formEl.style.height = h + 'px';
+  }
+
+  // Focus automatique + reset hauteur lors du changement de step
   $effect(() => {
+    if (step !== 1 && formEl) {
+      formEl.style.height = '';
+      const textarea = inputs[0] as HTMLTextAreaElement;
+      if (textarea) textarea.style.height = '';
+    }
     inputs[step - 1]?.focus();
   });
 
 </script>
 
 <form
+  bind:this={formEl}
   method="POST"
   action={formAction}
   use:enhance={() => {
@@ -61,25 +88,26 @@
         dueDate = '';
         // Recharger les données pour afficher la nouvelle card
         await invalidateAll();
-      }, 1000);
+      }, 300);
     };
   }}
-  class="relative bg-white z-0 rounded-full {classSearch}"
+  class="relative z-0 {classSearch}"
 >
-  <input
+  <textarea
     bind:this={inputs[0]}
     id={idSearch}
-    class="task z-1"
+    class="task z-1 text-xl resize-none overflow-y-auto placeholder:text-sm placeholder:text-grey-dark"
     class:task-hidden={step > 1}
-    type="text"
     bind:value={title}
     name="title"
     autocomplete="off"
     placeholder="ajouter une tâche"
     required
     readonly={step > 1}
+    rows="1"
     onkeydown={(e) => handleKeydown(e, 1)}
-  >
+    oninput={autoResize}
+  ></textarea>
 
   <input
     bind:this={inputs[1]}
@@ -107,7 +135,7 @@
     readonly={step !== 3}
     onkeydown={(e) => handleKeydown(e, 3)}
   >
-  <button type="submit" class="group bg-white hover:bg-grey transition-all duration-100 overflow-hidden z-10 absolute top-3 right-3 w-20 bottom-3 rounded-full flex items-center justify-end
+  <button type="submit" class="group bg-white hover:bg-grey transition-all duration-100 overflow-hidden z-10 absolute top-4 right-3 w-30 h-10 bottom-3 rounded-full flex items-center justify-end
     hover:shadow-md
     {step > 1 ? 'border border-dark' : 'border border-dark'}"
     >
@@ -117,8 +145,9 @@
       class:scale-x-66={step === 3}
       class:scale-x-100={step === 4}
     ></span>
-    <div class="relative rounded-full w-5.5 h-5.5 z-12 border border-dark group-hover:scale-80 mr-2 bg-grey flex items-center justify-center"
-    class:bg-success={step===4}
+    <div class="relative rounded-full w-5.5 h-5.5 z-12 border border-dark group-hover:scale-80 mr-2 flex items-center justify-center"
+    class:bg-grey={step!==4}
+    class:bg-green-light-re={step===4}
     class:anim-validation={step===4}>
       <Icon width="0.6rem" height="0.6rem" type="plus" customColor="stroke-primary" classIcon="group-hover:stroke-violet"/>
     </div>
@@ -126,7 +155,7 @@
   </button>
 
   {#if form?.error}
-    <div class="text-red-500 text-sm mt-2">
+    <div class="text-error text-sm mt-2">
       {JSON.stringify(form.error)}
     </div>
   {/if}

@@ -1,192 +1,119 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import Tasksbar from "$lib/components/Tasksbar.svelte";
-	import Taskscard from "$lib/components/Taskscard.svelte";
-	import Button from "$lib/components/Button.svelte";
+  import { enhance } from '$app/forms';
+  import Tasksbar from "$lib/components/Tasksbar.svelte";
+  import Taskscard from "$lib/components/Taskscard.svelte";
+  import Button from "$lib/components/Button.svelte";
+  import { useSortable } from '$lib/utils/useDragAndDrop.svelte';
 
-    let {data, form}=$props();
+  let { data, form } = $props();
 
-    // Ordre personnalisé des catégories (chargé depuis la DB)
-    let categoryOrder = $state<string[]>([]);
+  // Options de tri
+  type SortOption = 'date' | 'priority' | 'category' | 'custom';
+  let sortBy = $state<SortOption>('date');
 
-    // Initialiser l'ordre depuis les données serveur
-    $effect(() => {
-      if (data.categoryOrder?.length && categoryOrder.length === 0) {
-        categoryOrder = [...data.categoryOrder];
+  const sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'date', label: 'Date' },
+    { value: 'priority', label: 'Priorité' },
+    { value: 'category', label: 'Catégorie' },
+    { value: 'custom', label: 'Mon tri' },
+  ];
+
+  // Ordre des priorités pour le tri
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+
+  // Ordre custom pour le drag & drop (juste les IDs)
+  let customOrder = $state<string[] | null>(null);
+
+  // Tâches triées — dérivé directement de data.tasks (pas de $effect)
+  let sortedTasks = $derived.by(() => {
+    const tasks = [...(data.tasks || [])];
+
+    if (sortBy === 'custom' && customOrder) {
+      const order = customOrder;
+      const ordered = order
+        .map(id => tasks.find(t => t.id === id))
+        .filter((t): t is NonNullable<typeof t> => t != null);
+      const remaining = tasks.filter(t => !order.includes(t.id));
+      return [...ordered, ...remaining];
+    }
+
+    return tasks.sort((a, b) => {
+      if (sortBy === 'date') {
+        const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+        const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+        return dateA - dateB;
       }
+
+      if (sortBy === 'priority') {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+
+      if (sortBy === 'category') {
+        const catA = a.category || 'zzz';
+        const catB = b.category || 'zzz';
+        return catA.localeCompare(catB);
+      }
+
+      return 0;
     });
+  });
 
-    // Fonction pour sauvegarder l'ordre en DB
-    async function saveCategoryOrder(order: string[]) {
-      const formData = new FormData();
-      formData.append('order', JSON.stringify(order));
-
-      await fetch('?/saveCategoryOrder', {
-        method: 'POST',
-        body: formData,
-      });
-    }
-
-    let groupedCategories = $derived.by(() => {
-      const grouped:Record<string, typeof data.tasks> = {};
-      for( const task of data.tasks || []){
-        const cat =  task.category || 'Sans'
-        if(!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(task);
+  // Drag & Drop
+  const { sortable, isDragging, isDragOver } = useSortable({
+    onReorder: async (group, newOrder) => {
+      if (group === 'tasks') {
+        sortBy = 'custom';
+        customOrder = newOrder;
       }
-        const allCatNames = Object.keys(grouped);
-        // Format : [{ name: 'Urgent', tasks: [...] }, { name: 'Projets', tasks: [...] }]
-        const sortedNames = allCatNames.sort((a,b) => {
-            if(a === 'Sans') return -1
-            if(b === 'Sans') return 1
-
-            const indexA =  categoryOrder.indexOf(a);
-            const indexB =  categoryOrder.indexOf(b);
-
-            if(indexA === -1 && indexB === -1) return 0;
-            if(indexA === -1) return 1;
-            if(indexB === -1) return -1;
-
-            return indexA - indexB;
-             
-        });
-
-        return sortedNames.map(name => ({
-          name,
-          tasks:grouped[name]
-        }));
-      
-    }) 
-
-    // Drag and drop state
-    let draggedCategory = $state<string | null>(null);
-    let dragOverCategory = $state<string | null>(null);
-
-    function handleDragStart(category: string) {
-      if (category === 'Sans catégorie') return;
-      draggedCategory = category;
-    }
-
-    function handleDragOver(e: DragEvent) {
-      e.preventDefault();
-    }
-
-    function handleDragEnter(category: string) {
-      if (draggedCategory && category !== draggedCategory) {
-        dragOverCategory = category;
-      }
-    }
-
-    function handleDragLeave(e: DragEvent, category: string) {
-      const relatedTarget = e.relatedTarget as Node | null;
-      const currentTarget = e.currentTarget as Node | null;
-      if (!currentTarget || !relatedTarget || !(currentTarget as Element).contains(relatedTarget)) {
-        if (dragOverCategory === category) {
-          dragOverCategory = null;
-        }
-      }
-    }
-
-   async function handleDrop(targetCategory: string) {
-    // 1. Sécurité : On ne bouge rien si c'est invalide ou si c'est "Sans catégorie"
-    if (!draggedCategory || targetCategory === 'Sans catégorie' || draggedCategory === targetCategory) {
-        draggedCategory = null;
-        return;
-    }
-
-    // 2. Récupérer uniquement les NOMS des catégories (sauf "Sans catégorie") 
-    // à partir de notre nouvelle structure dérivée
-    const currentCatsNames: string[] = groupedCategories.map((c: { name: string }) => c.name).filter((name: string): name is string => name !== 'Sans catégorie');
-
-    const fromIndex = currentCatsNames.indexOf(draggedCategory);
-    const toIndex = currentCatsNames.indexOf(targetCategory);
-
-    if (fromIndex !== -1 && toIndex !== -1) {
-        // Sauvegarde de l'ancien état pour le Rollback (Optimistic UI)
-        const previousOrder = [...categoryOrder];
-
-        // 3. Calcul du nouvel ordre
-        const newOrder = [...currentCatsNames];
-        newOrder.splice(fromIndex, 1);
-        newOrder.splice(toIndex, 0, draggedCategory);
-
-        // 4. Mise à jour immédiate de l'interface
-        categoryOrder = newOrder;
-
-        try {
-            // 5. Tentative de sauvegarde en DB
-            await saveCategoryOrder(newOrder);
-        } catch (error) {
-            // 6. Rollback si ça échoue
-            categoryOrder = previousOrder;
-            console.error("Échec de la sauvegarde :", error);
-        }
-    }
-
-    draggedCategory = null;
-    dragOverCategory = null;
-}
-
-function handleDragEnd() {
-  draggedCategory = null;
-  dragOverCategory = null;
-}
+    },
+  });
 </script>
 
-<div class="wrapper-full bg-secondary">
+<div class="relative min-h-screen pb-20">
+  <img src="/tasks/logo-todo.svg" alt="ile de la réunion" srcset="" class="fixed top-5 left-5 w-40 h-auto object-cover z-2">
+  <img src="/tasks/bg-re-1.webp" alt="ile de la réunion" srcset="" class="fixed top-0 left-0 h-screen w-screen object-cover z-0">
 
-    <Tasksbar classSearch="w-120 h-14 mt-16 mx-auto" formAction="?/create" {form}/>
+  <!-- Background -->
+  <div class="absolute top-0 left-0 h-full w-screen bg-linear-to-b from-green-re/60 to-green-re/90 z-1"></div>
+  <div class="fixed top-0 left-0 grain h-full w-screen z-1 opacity-5"></div>
 
+  <!-- Rentrer les tâches -->
+  <Tasksbar classSearch="wrapper-med w-full relative min-h-18 my-30 mx-auto z-2" formAction="?/create" {form}/>
+
+  <!-- Barre de filtres -->
+  <div class="wrapper-med relative flex items-center justify-center gap-8 mt-8 z-2">
+
+      {#each sortOptions as option}
+        <button
+          type="button"
+          onclick={() => sortBy = option.value}
+          class=" glass border-gradient glass-hover px-4 py-2 rounded-lg transition-colors
+          { sortBy === option.value ? 'active' : ''}"
+        >
+          {option.label}
+        </button>
+      {/each}
+    
     <form action="?/deleteAll" method="POST" use:enhance>
-      <Button variant="delete"></Button>
+      <Button variant="delete" color="text-white" classButton="w-10 h-10 glass glass-hover rounded-full flex items-center justify-center border-gradient"></Button>
     </form>
+  </div>
 
-    <section class="wrapper-full min-h-screen mt-8 overflow-x-auto">
-      {#if data.tasks?.length}
-        <div class="flex gap-6">
-          {#each groupedCategories as categoryGroup}
-              <ul
-                class="flex flex-col gap-4 min-w-80"
-                draggable={categoryGroup.name !== 'Sans catégorie'}
-                ondragstart={() => handleDragStart(categoryGroup.name)}
-                ondragover={handleDragOver}
-                ondragenter={() => handleDragEnter(categoryGroup.name)}
-                ondragleave={(e) => handleDragLeave(e, categoryGroup.name)}
-                ondrop={() => handleDrop(categoryGroup.name)}
-                ondragend={handleDragEnd}
-                class:opacity-50={draggedCategory === categoryGroup.name}
-                class:cursor-grab={categoryGroup.name !== 'Sans catégorie'}
-                class:active={dragOverCategory === categoryGroup.name}
-              >
-                <li>
-                {#if categoryGroup.name !== 'Sans catégorie'}
-                  <form action="?/renameCategory" method="POST" use:enhance class="flex-1">
-                    <input type="hidden" name="oldCategory" value={categoryGroup.name} />
-                    <input
-                      type="text"
-                      name="newCategory"
-                      class="font-bold text-lg bg-transparent w-full"
-                      value={categoryGroup.name}
-                    />
-                  </form>
-                  <form action="?/deleteCategory" method="POST" use:enhance>
-                    <input type="hidden" name="category" value={categoryGroup.name} />
-                    <Button variant="delete"></Button>
-                  </form>
-                {:else}
-                  <h2 class="font-bold text-lg">{categoryGroup.name}</h2>
-                {/if}</li>
-                {#each categoryGroup.tasks as task}
-                  <li>
-                    <Taskscard {task}></Taskscard>
-                  </li>
-                {/each}
-              </ul>
-          {/each}
-        </div>
-      {:else}
-        <p class="text-center text-grey-dark">Aucune tâche</p>
-      {/if}
-    </section>
+  <!-- Liste des tâches -->
+  <section class="wrapper-med relative mt-6 z-2">
+    {#if sortedTasks.length}
+      <ul class="flex flex-col gap-8" use:sortable>
+        {#each sortedTasks as task (task.id)}
+          <li
+            data-drag-key={task.id}
+            data-drag-group="tasks"
+            class="flex items-start gap-2">
+           <Taskscard task={{ ...task, dragging: isDragging(task.id), dragOver: isDragOver(task.id) }} />
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <p class="text-center text-white py-12">Aucune tâche</p>
+    {/if}
+  </section>
 </div>
-

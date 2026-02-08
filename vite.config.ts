@@ -7,9 +7,5 @@ export default defineConfig({
 	css: {
 		devSourcemap: true
 	},
-	server: {
-		watch: {
-			usePolling: true
-		}
-	}
+	server: {}
 });
