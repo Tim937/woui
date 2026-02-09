@@ -220,6 +220,21 @@ export const actions: Actions = {
     return { success: true };
   },
 
+  saveTaskOrder: async ({ request }) => {
+    const formData = await request.formData();
+    const orderJson = formData.get('order') as string;
+    const order: string[] = JSON.parse(orderJson);
+
+    for (let i = 0; i < order.length; i++) {
+      db.update(tasks)
+        .set({ customPosition: i })
+        .where(eq(tasks.id, order[i]))
+        .run();
+    }
+
+    return { success: true };
+  },
+
   delete: async ({ request }) => {
     const formData = await request.formData();
     const id = formData.get('id') as string;

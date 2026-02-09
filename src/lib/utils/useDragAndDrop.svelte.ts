@@ -85,10 +85,44 @@ export function useSortable(options: SortableOptions) {
     }
   }
 
+  // Auto-scroll quand on drag près des bords
+  const SCROLL_ZONE = 150;
+  const SCROLL_SPEED = 2;
+  let scrollRAF: number | null = null;
+
+  function startAutoScroll(clientY: number) {
+    cancelAutoScroll();
+
+    const vh = window.innerHeight;
+    let speed = 0;
+
+    if (clientY < SCROLL_ZONE) {
+      speed = -SCROLL_SPEED;
+    } else if (clientY > vh - SCROLL_ZONE) {
+      speed = SCROLL_SPEED;
+    }
+
+    if (speed === 0) return;
+
+    function step() {
+      window.scrollBy(0, speed);
+      scrollRAF = requestAnimationFrame(step);
+    }
+    scrollRAF = requestAnimationFrame(step);
+  }
+
+  function cancelAutoScroll() {
+    if (scrollRAF !== null) {
+      cancelAnimationFrame(scrollRAF);
+      scrollRAF = null;
+    }
+  }
+
   function reset() {
     draggedKey = null;
     draggedGroup = null;
     dragOverKey = null;
+    cancelAutoScroll();
     destroyGhost();
   }
 
@@ -115,6 +149,7 @@ export function useSortable(options: SortableOptions) {
       if (!draggedKey) return;
 
       moveGhost(e.clientX, e.clientY);
+      startAutoScroll(e.clientY);
 
       const elBelow = document.elementFromPoint(e.clientX, e.clientY);
       if (!elBelow) { dragOverKey = null; return; }

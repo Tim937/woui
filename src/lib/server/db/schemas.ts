@@ -73,8 +73,8 @@ export const trips = sqliteTable('trips', {
   destination: text('destination').notNull(),
   startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
   endDate: integer('end_date', { mode: 'timestamp' }).notNull(),
-  status: text('status', { enum: ['active', 'completed', 'cancelled'] })
-    .default('active')
+  status: text('status', { enum: ['in_progress', 'completed', 'active', 'finished', 'cancelled'] })
+    .default('in_progress')
     .notNull(),
   notes: text('notes'),
   createdAt: integer('created_at', { mode: 'timestamp' })
@@ -174,6 +174,23 @@ export const tripMaps = sqliteTable('trip_maps', {
     .notNull(),
 });
 
+// --- 8. TABLE TRIP_ACTIONS (étapes à compléter pour passer in_progress → completed) ---
+export const tripActions = sqliteTable('trip_actions', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  tripId: text('trip_id')
+    .references(() => trips.id, { onDelete: 'cascade' })
+    .notNull(),
+  position: integer('position').notNull(),
+  label: text('label').notNull(),
+  completed: integer('completed', { mode: 'boolean' }).default(false).notNull(),
+  completedAt: integer('completed_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+});
+
 // --- 9. TABLE TASKS (gestion de projet) ---
 export const taskCategoryOrder = sqliteTable('task_category_order', {
   id: text('id')
@@ -197,6 +214,7 @@ export const tasks = sqliteTable('tasks', {
     .default('medium')
     .notNull(),
   dueDate: integer('due_date', { mode: 'timestamp' }),
+  customPosition: integer('custom_position'),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .default(sql`(unixepoch())`)
     .notNull(),
@@ -234,6 +252,7 @@ export const tripsRelations = relations(trips, ({ one, many }) => ({
   }),
   conversations: many(conversations),
   tripMaps: many(tripMaps),
+  actions: many(tripActions),
 }));
 
 export const conversationsRelations = relations(conversations, ({ one, many }) => ({
@@ -275,5 +294,12 @@ export const tripMapsRelations = relations(tripMaps, ({ one }) => ({
   map: one(maps, {
     fields: [tripMaps.mapId],
     references: [maps.id],
+  }),
+}));
+
+export const tripActionsRelations = relations(tripActions, ({ one }) => ({
+  trip: one(trips, {
+    fields: [tripActions.tripId],
+    references: [trips.id],
   }),
 }));

@@ -9,7 +9,13 @@
 
   // Options de tri
   type SortOption = 'date' | 'priority' | 'category' | 'custom';
-  let sortBy = $state<SortOption>('date');
+
+  // Snapshot initiale — voulu : on ne veut que la valeur au mount, pas de réactivité
+  // svelte-ignore state_referenced_locally
+  const initTasks = data.tasks;
+  const hasPersistedOrder = initTasks.some(t => t.customPosition != null);
+
+  let sortBy = $state<SortOption>(hasPersistedOrder ? 'custom' : 'date');
 
   const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'date', label: 'Date' },
@@ -21,8 +27,12 @@
   // Ordre des priorités pour le tri
   const priorityOrder = { high: 0, medium: 1, low: 2 };
 
-  // Ordre custom pour le drag & drop (juste les IDs)
-  let customOrder = $state<string[] | null>(null);
+  // Ordre custom pour le drag & drop — initialisé depuis la BDD si positions existantes
+  let customOrder = $state<string[] | null>(
+    hasPersistedOrder
+      ? [...initTasks].sort((a, b) => (a.customPosition ?? Infinity) - (b.customPosition ?? Infinity)).map(t => t.id)
+      : null
+  );
 
   // Tâches triées — dérivé directement de data.tasks (pas de $effect)
   let sortedTasks = $derived.by(() => {
@@ -69,6 +79,16 @@
       if (group === 'tasks') {
         sortBy = 'custom';
         customOrder = newOrder;
+
+        // Persister l'ordre en BDD
+        const body = new FormData();
+        body.set('order', JSON.stringify(newOrder));
+        try {
+          const res = await fetch('?/saveTaskOrder', { method: 'POST', body });
+          if (!res.ok) console.error('saveTaskOrder failed:', res.status);
+        } catch (err) {
+          console.error('saveTaskOrder error:', err);
+        }
       }
     },
   });
