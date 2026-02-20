@@ -33,6 +33,7 @@ export const clients = sqliteTable('clients', {
     .unique()
     .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
+  surname: text('surname').notNull(),
   phone: text('phone'),
   address: text('address'),
   notes: text('notes'),

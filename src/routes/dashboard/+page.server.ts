@@ -16,20 +16,53 @@ export const load: PageServerLoad = async({cookies}) => {
 
   const { user } = getSessionSafeUser(cookies);
 
+  // Vérifier que l'utilisateur a le bon rôle
+  if (user.role !== 'admin' && user.role !== 'agency') {
+    throw redirect(303, '/'); // ou une page d'erreur
+  }
+
+  let agencyClientsList;
+
   // récupérer les clients de l'agence via la table de liaison
-  const agencyClientsList = db
-  .select({
-      id:clients.id,
-      name:clients.name,
-      email:clients.email,
-      phote: clients.phone,
-      address:clients.accessToken,
-      createdAt:clients.createdAt
-  })
-  .from(agencyClients)
-  .innerJoin(clients, eq(agencyClients.clientId, clients.id))
-  .where(eq(agencyClients.agencyId, user.id))
-  .all();
+
+  try {
+    if(user.role === "admin") {
+      agencyClientsList = await db.query.clients.findMany({
+        with: {
+          trips: {
+            columns: {
+              id: true,
+              reference: true,
+              destination: true,
+              status: true
+            }
+          }
+        }
+      });
+    } else {
+      const result = await db.query.agencyClients.findMany({
+        where: eq(agencyClients.agencyId, user.id),
+        with: {
+          client: {
+            with: {
+              trips: {
+                columns: {
+                  id: true,
+                  reference: true,
+                  destination: true,
+                  status: true
+                }
+              }
+            }
+          }
+        }
+      });
+      agencyClientsList = result.map(r => r.client);
+    }
+  } catch (error) {
+    console.error('Erreur Query API:', error);
+    throw error;
+  }
   return {user, clients: agencyClientsList}
 };
 
@@ -63,7 +96,8 @@ export const actions = {
     } else {
       clientData = db.insert(clients).values({
         email:result.data.email,
-        name:'',
+        name:'Avez-vous un nom ?',
+        surname:'Ho, et un prénom aussi ?',
         password:''
       }).returning().get();
         db.insert(agencyClients).values({

@@ -5,13 +5,18 @@ import { eq } from 'drizzle-orm';
 import type { Cookies } from '@sveltejs/kit';
 
 
+
 //Pour récupérer un utilisateur sans le mot de passe associé
 
+
+
 export function getSessionSafeUser(cookies: Cookies) {
+
   const sessionId = cookies.get('session');
   if (!sessionId) throw redirect(302, '/login');
 
   const user = db.select().from(users).where(eq(users.id, sessionId)).get();
+
   if (!user) throw redirect(302, '/login');
   return { sessionId, user };
 }

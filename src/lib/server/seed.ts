@@ -1,8 +1,36 @@
 import { db } from '$lib/server/db';
-import { users, clients, agencyClients } from '$lib/server/db/schemas';
+import {
+  users,
+  clients,
+  agencyClients,
+  trips,
+  conversations,
+  messages,
+  maps,
+  tripMaps,
+  tripActions
+} from '$lib/server/db/schemas';
 import bcrypt from 'bcryptjs';
 
 export async function seedDatabase() {
+  // ⚠️ NETTOYAGE : Supprimer toutes les données SAUF les tasks
+  // Ordre important à cause des foreign keys (enfants avant parents)
+
+  console.log('🧹 Nettoyage de la base (préservation des tâches)...');
+
+  db.delete(messages).run();
+  db.delete(conversations).run();
+  db.delete(tripActions).run();
+  db.delete(tripMaps).run();
+  db.delete(trips).run();
+  db.delete(maps).run();
+  db.delete(agencyClients).run();
+  db.delete(clients).run();
+  db.delete(users).run();
+
+  console.log('✅ Nettoyage terminé (tâches préservées)');
+  console.log('🌱 Création des nouvelles données...');
+
   const hashedPassword = await bcrypt.hash('password123', 12);
 
   // 0. Créer l'admin
@@ -39,8 +67,9 @@ export async function seedDatabase() {
     usedCombinations.add(fullName);
 
     return {
-      name: fullName,
-      email: `${familyName.toLowerCase()}.${firstName.toLowerCase()}@wouitest.lareunion`,
+      name: familyName,
+      surname:firstName,
+      email: `${familyName.toLowerCase()}.${firstName.toLowerCase()}@ouiiz.lareunion`,
       phone: '00000000',
       address: 'rue fictive',
     };
@@ -54,6 +83,7 @@ export async function seedDatabase() {
       email: c.email,
       password: hashedPassword,
       name: c.name,
+      surname: c.surname,
       phone: c.phone,
       address: c.address,
     }).returning().get();
@@ -66,11 +96,17 @@ export async function seedDatabase() {
     }).run();
   }
 
+  console.log('✅ Seed terminé avec succès !');
+  console.log(`📧 Admin: ${admin.email} / password123`);
+  console.log(`🏢 Agence: ${agency.email} / password123`);
+  console.log(`👥 ${createdClients.length} clients créés`);
+
   return {
     admin: { email: admin.email, password: 'password123' },
     agency: { email: agency.email, password: 'password123' },
     clients: createdClients.map(c => ({
       name: c.name,
+      surname: c.surname,
       email: c.email,
       accessToken: c.accessToken,
       link: `/client/access/${c.accessToken}`

@@ -6,17 +6,19 @@ https://css-tricks.com/grainy-gradients/
 .test {
   
   /* Couleurs */
-  --color-violet:#6315C1;
-  --color-primary: #4E08A8;
-  --color-secondary: #212025;
-  --color-success: #72FC29;
-  --color-warning: #FFC035;
-  --color-error: #FE5A35;
-  --color-focus: #cba5fa;
-  --color-important:#fe3546;
-  --color-in_progress:#feae35;
-  --color-done:#5afa5a;
+  --color-blue-light:#EFEFFA;
+  --color-gray:#E2E2E2;
+  --color-gray-light:#F0F0F0;
+  --color-brown-light:#EDE7E7;
+  --color-yellow:#FFC035;
+  --color-yellow-light:#FFD264;
+  --color-red:#FE5A35;
+  --color-green:#75FF2B;
 
+
+
+
+  /*Admin*/
   --color-blue-re-deep:#85d3f4;
   --color-blue-re:#A8DBE9;
   --color-green-re:#1a2d22;
@@ -68,20 +70,95 @@ https://css-tricks.com/grainy-gradients/
   --spacing-btn: 52px;
   --spacing-call: 72px;
 }
+/*Font Face*/
+
+@font-face {
+  font-family: Oswald;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("/fonts/Oswald.woff2") format("woff2");
+}
+
+/* Roboto Condensed */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/RobotoCondensed-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/RobotoCondensed-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/RobotoCondensed-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/RobotoCondensed-ExtraBoldItalic.ttf") format("truetype");
+}
+
+/* OpenSans Semi Condensed */
+@font-face {
+  font-family: 'Open Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OpenSans_SemiCondensed-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Open Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OpenSans_SemiCondensed-Italic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Open Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/OpenSans_SemiCondensed-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Open Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/OpenSans_SemiCondensed-BoldItalic.ttf") format("truetype");
+}
+
 
 @theme {
 
   /* Couleurs */
-  --color-violet:#6315C1;
-  --color-primary: #4E08A8;
-  --color-secondary: #212025;
-  --color-success: #72FC29;
-  --color-warning: #FFC035;
-  --color-error: #FE5A35;
-  --color-focus: #cba5fa;
-  --color-important:#fe3546;
-  --color-in_progress:#feae35;
-  --color-done:#5afa5a;
+  --color-blue-light:#EFEFFA;
+  --color-gray:#e2e2e2;
+  --color-gray-light:#F0F0F0;
+  --color-brown-light:#EDE7E7;
+  --color-yellow:#FFC035;
+  --color-yellow-light:#FFD264;
+  --color-red:#FE5A35;
+  --color-green:#75FF2B;
+
 
   /* Genériques */
   --color-white: #ffffff;
@@ -124,9 +201,11 @@ https://css-tricks.com/grainy-gradients/
   /* Shadows */
   --shadow-sm: rgba(100, 100, 111, 0.2) 0px 6px 16px 0px;
 
- /* fonts */ 
+ /* fonts */
+  --font-roboto: 'Roboto Condensed', sans-serif;
+  --font-open: 'Open Sans Semi Condensed', sans-serif;
 
-  --font-sans: system-ui, -apple-system, sans-serif;
+
   /* Wrapping */
   --container-big: 1600px;
   --container-med: 1040px;
@@ -163,13 +242,25 @@ https://css-tricks.com/grainy-gradients/
 
   /* Body */
   body {
-    min-height: 100vh;
-    font-family: var(--font-sans);
-    line-height: inherit;
-    color: var(--color-dark);
-    background: var(--color-white);
+    @apply font-open min-h-screen;
   }
 
+  /**fonts */
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-roboto;
+  }
+
+  /* Tous les autres éléments */
+  p, a, span, div, section, article, aside, nav, header, footer, main,
+  input, textarea, select, button, label, fieldset, legend, option, optgroup,
+  ul, ol, li, dl, dt, dd,
+  table, thead, tbody, tfoot, tr, th, td, caption,
+  blockquote, q, cite, time, address, details, summary,
+  em, strong, small, mark, del, ins, sub, sup, abbr, code, kbd, samp, pre,
+  figure, figcaption, form {
+    @apply font-open;
+  }
 
   /* Links */
   a {
@@ -393,11 +484,11 @@ https://css-tricks.com/grainy-gradients/
 
 
   .wrapper-full {
-    @apply w-full px-10;
+    @apply w-full px-desk;
   }
 
   .wrapper-big {
-    @apply max-w-[var(--container-big)] mx-auto;
+    @apply max-w-[var(--container-big)] w-full px-desk;
   }
 
   .wrapper-med {

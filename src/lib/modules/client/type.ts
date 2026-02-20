@@ -1,6 +1,7 @@
-export interface ClientCardData {
+export interface cardClientDatas {
 	id: string;
 	name: string;
+	surname: string;
 	email: string;
 	phone: string | null;
 	address: string | null;
@@ -10,7 +11,8 @@ export interface ClientCardData {
 		id: string;
 		reference: string;
 		destination: string;
-		status: 'active' | 'completed' | 'cancelled';
+		status: 'in_progress' | 'completed' | 'active' | 'finished' | 'cancelled';
 	}[];
 	unreadChats?: number;
 }
+

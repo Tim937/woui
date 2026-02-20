@@ -2,6 +2,7 @@
     import type {HTMLButtonAttributes} from 'svelte/elements';
     import type {Snippet} from 'svelte';
     import Icon from '$lib/componentsAdmin/Icon.svelte';
+    
     interface Props extends HTMLButtonAttributes {
         variant: 'delete' | 'check';
         color?:string;
