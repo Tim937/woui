@@ -4,22 +4,28 @@
 	import type { Snippet } from 'svelte';
 
     interface Props extends HTMLButtonAttributes {
-        variant: 'delete' | 'check';
-        icon?:String;
-        color?:string;
-        className?:string;
+        variant: 'delete' | 'check' | 'chat' | 'wait' | 'plus';
+        shape?:'round'|'text';
+        classIcon?:string;
         children?: Snippet;
     }
-    
-    let {variant,color,icon,className,children,...rest}: Props = $props();
+    const shapes: Record<string, string> = {
+        round: 'w-12 h-12 rounded-full flex items-center justify-center border border-gray',
+        text: 'flex items-center justify-center ',
+    };
+
+    let { variant, shape, classIcon, class: className, children, ...rest }: Props = $props();
 
 </script>
 
-<button class="">
+<button class="{shape ? shapes[shape] : ''} {className ?? ''}" {...rest}>
+
     {#if children}
         {@render children()}
     {/if}
-    {#if icon}
-        <Icon type={variant}/>
-    {/if}
+    {#if classIcon}
+    <span class="w-8 h-8 flex items-center justify-center border-2 border-dark rounded-full {classIcon ?? ''}">
+        <Icon type={variant} size="w-3.5 h-3.5" color="text-dark"/>
+    </span>
+    {/if} 
 </button>

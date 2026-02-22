@@ -304,3 +304,14 @@ export const tripActionsRelations = relations(tripActions, ({ one }) => ({
     references: [trips.id],
   }),
 }));
+
+
+//--- 11 TABLE DASHBOARD SLOTS
+
+export const dashboardSlots = sqliteTable('dashboard_slots', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  position: integer('position').notNull(),
+  type: text('type', { enum: ['clients', 'stats', 'chats', 'meets'] }),
+});

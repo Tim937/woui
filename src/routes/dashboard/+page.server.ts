@@ -1,10 +1,10 @@
 import {redirect, fail} from '@sveltejs/kit';
 
 import {db} from '$lib/server/db';
-import {users,clients, agencyClients} from '$lib/server/db/schemas';
-import {eq} from 'drizzle-orm';
-import type {PageServerLoad} from './$types';
-import {newClientSchema} from '$lib/server/db/validation';
+import { clients, agencyClients, dashboardSlots } from '$lib/server/db/schemas';
+import { eq, sql } from 'drizzle-orm';
+import type { PageServerLoad } from './$types';
+import { newClientSchema } from '$lib/server/db/validation';
 import { sendInviteEmail } from '$lib/server/mail';
 import { getSessionSafeUser } from '$lib/server/sessions';
 
@@ -63,13 +63,16 @@ export const load: PageServerLoad = async({cookies}) => {
     console.error('Erreur Query API:', error);
     throw error;
   }
-  return {user, clients: agencyClientsList}
+
+  let slots = await db.select().from(dashboardSlots).orderBy(dashboardSlots.position);
+
+  return {user, clients: agencyClientsList, slots}
 };
 
 
 export const actions = {
 
-  default: async ({ request, cookies, url }) => {
+  inviteClient: async ({ request, cookies, url }) => {
 
     const { user } = getSessionSafeUser(cookies);
 
@@ -106,7 +109,6 @@ export const actions = {
       }).run();
     }
 
-
     const link = `${url.origin}/client/access/${clientData.accessToken}`;
     await sendInviteEmail(result.data.email, link, subjectToDefineLaterByUser,result.data.message);
 
@@ -118,6 +120,46 @@ export const actions = {
       link
 
     };
+  },
+  defaultSlot: async ({ cookies }) => {
+    getSessionSafeUser(cookies);
+    await db.delete(dashboardSlots);
+    await db.insert(dashboardSlots).values([
+      { position: 0 },
+      { position: 1 },
+      { position: 2 },
+      { position: 3 },
+    ]);
+    return { success: true };
+  },
+  addSlot: async ({ cookies }) => {
+    getSessionSafeUser(cookies);
+    // Tous les slots existants reculent d'une place
+    await db.update(dashboardSlots).set({ position: sql`position + 1` });
+    // Le nouveau arrive en position 0
+    await db.insert(dashboardSlots).values({ position: 0 });
+    return { success: true };
+  },
+  updateSlotType: async ({ request, cookies }) => {
+    getSessionSafeUser(cookies);
+    const formData = await request.formData();
+    const id = formData.get('id') as string;
+    const type = formData.get('type') as 'clients' | 'stats' | 'chats' | 'meets' | null;
+    await db.update(dashboardSlots).set({ type: type || null }).where(eq(dashboardSlots.id, id));
+    return { success: true };
+  },
+  removeSlot: async ({ request, cookies }) => {
+    getSessionSafeUser(cookies);
+    const formData = await request.formData();
+    const id = formData.get('id') as string;
+    // Récupérer la position du slot à supprimer
+    const [slot] = await db.select().from(dashboardSlots).where(eq(dashboardSlots.id, id));
+    await db.delete(dashboardSlots).where(eq(dashboardSlots.id, id));
+    // Les slots suivants remontent d'une place
+    await db.update(dashboardSlots)
+      .set({ position: sql`position - 1` })
+      .where(sql`position > ${slot.position}`);
+    return { success: true };
   },
 };
 

@@ -1,8 +1,21 @@
 
-import type { PageProps } from '../$types';
+import { db } from '$lib/server/db';
+import { clients } from '$lib/server/db/schemas';
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { eq } from 'drizzle-orm';
 
-// import { getClient } from '../blog.remote';
-let { params }: PageProps = $props();
-export const load = async ({ params }) => {
-    const clientId = params.id; // "abc-123"
-};
+
+export const load : PageServerLoad = async ({params}) => {
+    const client = await db.query.clients.findFirst({
+        where: eq(clients.id, params.id),
+        with: {trips:true}
+    })
+
+    if(client) {
+        return {client};
+    } else {
+        error(404, 'Client introuvable');
+    }
+
+}

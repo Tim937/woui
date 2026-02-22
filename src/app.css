@@ -6,8 +6,8 @@ https://css-tricks.com/grainy-gradients/
 .test {
   
   /* Couleurs */
-  --color-blue-light:#EFEFFA;
-  --color-gray:#E2E2E2;
+  --color-blue-light:#EFEFFA; 
+  --color-gray:#dcdcdc;
   --color-gray-light:#F0F0F0;
   --color-brown-light:#EDE7E7;
   --color-yellow:#FFC035;
@@ -16,15 +16,13 @@ https://css-tricks.com/grainy-gradients/
   --color-green:#75FF2B;
 
 
-
-
   /*Admin*/
   --color-blue-re-deep:#85d3f4;
   --color-blue-re:#A8DBE9;
   --color-green-re:#1a2d22;
   --color-red-re:#e33f37;
   --color-orange-re:#e39837;
-   --color-green-light-re:#54d272;
+  --color-green-light-re:#54d272;
 
   /* Genériques */
   --color-white: #ffffff;
@@ -32,7 +30,6 @@ https://css-tricks.com/grainy-gradients/
   --color-grey-dark:#747474;
   --color-grey:#b4b4b4;
   --color-beige:#EDE7E7;
-  --color-grey:#cfcfcf;
   --color-red:#e33f37;
   --color-yellow:#ffdc3d;
 
@@ -59,8 +56,8 @@ https://css-tricks.com/grainy-gradients/
   --radius-lg: 1rem;
 
  /* fonts */ 
-
   --font-sans: system-ui, -apple-system, sans-serif;
+
   /* Wrapping */
   --container-big: 1600px;
   /* --container-med: 1040px; */
@@ -151,16 +148,16 @@ https://css-tricks.com/grainy-gradients/
 
   /* Couleurs */
   --color-blue-light:#EFEFFA;
-  --color-gray:#e2e2e2;
+  --color-gray:#dcdcdc;
   --color-gray-light:#F0F0F0;
   --color-brown-light:#EDE7E7;
-  --color-yellow:#FFC035;
+  --color-yellow:#FFC035; 
   --color-yellow-light:#FFD264;
   --color-red:#FE5A35;
   --color-green:#75FF2B;
 
 
-  /* Genériques */
+  /* RE */
   --color-white: #ffffff;
   --color-dark: #141414;
   --color-grey-dark:#747474;
@@ -169,7 +166,7 @@ https://css-tricks.com/grainy-gradients/
   --color-grey:#cfcfcf;
   --color-red-re:#e33f37;
   --color-orange-re:#e39837;
-  --color-yellow:#ffdc3d;
+  --color-yellow-re:#FFC035;
 
   /* Color RE */
   --color-blue-re-deep:#85d3f4;

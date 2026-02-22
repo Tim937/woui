@@ -1,0 +1,1 @@
+export { default as DashboardSlot } from './+slot.svelte';

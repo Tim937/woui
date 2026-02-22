@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SVGAttributes } from 'svelte/elements';
   import type {HTMLInputAttributes} from 'svelte/elements';
-  type IconType = 'plus' | 'search' | 'delete' | 'check';
+  type IconType = 'plus' | 'search' | 'delete' | 'check' | 'chat' | 'wait';
 
   interface Props extends SVGAttributes<SVGElement> {
     type:IconType;
@@ -16,7 +16,7 @@
 
 </script>
 
-<svg class="{size} {color} {className}" {...rest} fill="none" >
+<svg class="{size} {color} {className}" {...rest}>
   <use href="/icons.svg?v={version}#{type}" />
 </svg>
 
