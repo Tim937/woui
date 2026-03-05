@@ -7,6 +7,7 @@ https://css-tricks.com/grainy-gradients/
   
   /* Couleurs */
   --color-blue-light:#EFEFFA; 
+  --color-blue:#C9EAFF;
   --color-gray:#dcdcdc;
   --color-gray-light:#F0F0F0;
   --color-brown-light:#EDE7E7;
@@ -149,6 +150,8 @@ https://css-tricks.com/grainy-gradients/
   /* Couleurs */
   --color-blue-light:#EFEFFA;
   --color-gray:#dcdcdc;
+  --color-blue:#C9EAFF;
+
   --color-gray-light:#F0F0F0;
   --color-brown-light:#EDE7E7;
   --color-yellow:#FFC035; 
@@ -370,6 +373,11 @@ https://css-tricks.com/grainy-gradients/
     resize: vertical;
   }
 
+  /* Dialog*/
+
+  dialog {
+    @apply m-0 max-w-none max-h-none p-0;
+  }
   /* Tables */
   table {
     border-collapse: collapse;
